@@ -20,9 +20,31 @@ namespace HeartRateMonitorAppPart2
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private BluetoothControl? bluetoothControl1;
+
+        public MainWindow(BluetoothControl bluetoothControl)
         {
             InitializeComponent();
+
+            bluetoothControl1 = bluetoothControl;
+
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            if (bluetoothControl1 != null)
+                bluetoothControl1.ReadReady += OnBluetoothReadReady;
+        }
+
+        private void OnBluetoothReadReady(object sender, BluetoothReadEventArgs e)
+        {
+            if (e != null && e.Value != null)
+            {
+                //HeartRateLiveTextbox.AppendText($"「{e.Entry.Text}」\n{e.Entry.TranslatedText}\n\n");
+                //HeartRateLiveTextbox.ScrollToEnd();
+            }
         }
     }
 }

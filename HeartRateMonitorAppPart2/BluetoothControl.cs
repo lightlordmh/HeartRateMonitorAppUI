@@ -10,15 +10,23 @@ namespace HeartRateMonitorAppPart2
 {
     public class BluetoothControl
     {
-        protected static DeviceInformation? blueToothDevice;
-        public static string HEART_RATE_SERVICE_ID = "180d";
+        protected DeviceInformation? blueToothDevice;
+        protected DeviceWatcher? deviceWatcher;
 
-        public static async Task MainControl()
+        public event EventHandler<BluetoothReadEventArgs> ReadReady;
+
+        public string HEART_RATE_SERVICE_ID = "180d";
+
+        public BluetoothControl()
+        {
+
+        }
+
+        public void InitializeDeviceWatcher()
         {
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
 
-            DeviceWatcher deviceWatcher =
-                        DeviceInformation.CreateWatcher(
+            deviceWatcher = DeviceInformation.CreateWatcher(
                                 BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
                                 requestedProperties,
                                 DeviceInformationKind.AssociationEndpoint);
@@ -35,6 +43,15 @@ namespace HeartRateMonitorAppPart2
 
             // Start the watcher.
             deviceWatcher.Start();
+        }
+
+        public async Task MainControl()
+        {
+            if (deviceWatcher == null)
+            {
+                return;
+            }
+
             while (true)
             {
                 if (blueToothDevice == null)
@@ -96,7 +113,7 @@ namespace HeartRateMonitorAppPart2
             deviceWatcher.Stop();
         }
 
-        private static void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             // An Indicate or Notify reported that the value has changed.
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -104,30 +121,34 @@ namespace HeartRateMonitorAppPart2
             var flags = reader.ReadByte();
             //The Final value I need to send to the graph
             var value = reader.ReadByte();
-            Console.WriteLine($"{flags} - {value}");
+            var stuff = $"{flags} - {value}";
+
+            Console.WriteLine(stuff);
+
+            ReadReady?.Invoke(this, new BluetoothReadEventArgs(value.ToString()));
         }
 
-        private static void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
+        private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             //throw new NotImplementedException();
         }
 
-        private static void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
             //throw new NotImplementedException();
         }
 
-        private static void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             //throw new NotImplementedException();
         }
 
-        private static void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             //throw new NotImplementedException();
         }
 
-        private static void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             if (args.Name == "808S 0039730")
             {
