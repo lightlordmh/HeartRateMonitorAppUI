@@ -43,8 +43,15 @@ namespace HeartRateMonitorAppPart2
             if (e != null && e.Value != null)
             {
                 //HeartRateLiveTextbox.AppendText($"「{e.Entry.Text}」\n{e.Entry.TranslatedText}\n\n");
+                HeartRate.Dispatcher.BeginInvoke(() =>
+                {
+                    HeartRate.Text = e.Value;
+                }); 
                 //HeartRateLiveTextbox.ScrollToEnd();
             }
         }
+
+
+
     }
 }

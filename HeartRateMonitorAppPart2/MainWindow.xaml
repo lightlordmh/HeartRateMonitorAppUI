@@ -26,8 +26,8 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="1" Grid.Row="1" FontSize="28" Text="OWO what is this? dad?"/>
-        
-        
+        <TextBlock Grid.Column="1" Grid.Row="1" FontSize="28" Text="HeartRateTest"/>
+        <TextBox x:Name="HeartRate" Grid.Row="1" Grid.Column="2" Text="10" FontSize="24"/>
+
     </Grid>
 </Window>

@@ -19,7 +19,8 @@ namespace HeartRateMonitorAppPart2
 
         public BluetoothControl()
         {
-
+            InitializeDeviceWatcher();
+            MainControl();
         }
 
         public void InitializeDeviceWatcher()
@@ -60,8 +61,8 @@ namespace HeartRateMonitorAppPart2
                 }
                 else
                 {
-                    Console.WriteLine("Press Any Key to Pair with coospo 808s");
-                    Console.ReadKey();
+                    //Console.WriteLine("Press Any Key to Pair with coospo 808s");
+                    //Console.ReadKey();
                     BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(blueToothDevice.Id);
                     Console.WriteLine("Attempting to Pair With device");
 
@@ -96,6 +97,7 @@ namespace HeartRateMonitorAppPart2
                                             if (status == GattCommunicationStatus.Success)
                                             {
                                                 characteristic.ValueChanged += Characteristic_ValueChanged;
+                                                characteristic.
                                                 // Server has been informed of clients interest.
                                             }
                                         }
@@ -105,8 +107,8 @@ namespace HeartRateMonitorAppPart2
                         }
                     }
 
-                    Console.WriteLine("Press Any Key to Exit Application");
-                    Console.ReadKey();
+                    //Console.WriteLine("Press Any Key to Exit Application");
+                    //Console.ReadKey();
                     break;
                 }
             }
