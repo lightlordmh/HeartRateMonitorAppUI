@@ -97,7 +97,6 @@ namespace HeartRateMonitorAppPart2
                                             if (status == GattCommunicationStatus.Success)
                                             {
                                                 characteristic.ValueChanged += Characteristic_ValueChanged;
-                                                characteristic.
                                                 // Server has been informed of clients interest.
                                             }
                                         }
