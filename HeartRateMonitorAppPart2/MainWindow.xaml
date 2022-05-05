@@ -5,29 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HeartRateMonitorAppPart2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="450" Width="1000" >
+    <Grid d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="10"/>   <!-- 0 -->
+            <ColumnDefinition Width="auto"/> <!-- 1 -->
+            <ColumnDefinition Width="auto"/> <!-- 2 -->
+            <ColumnDefinition Width="auto"/> <!-- 3 -->
+            <ColumnDefinition Width="auto"/> <!-- 4 -->
+            <ColumnDefinition Width="auto"/> <!-- 5 -->
+            <ColumnDefinition Width="*"/>    <!-- 6 -->
+            <ColumnDefinition Width="10"/>   <!-- 7 -->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="1" Grid.Row="1" FontSize="28" Text="HeartRateTest"/>
-        <TextBox x:Name="HeartRate" Grid.Row="1" Grid.Column="2" Text="10" FontSize="24"/>
+        <TextBlock x:Name="LHR" Grid.Row="1" Grid.Column="1" FontSize="28" Text="Live Heart Rate:" Margin="10,10,10,10" Padding="10,10,10,10"/>
+        <TextBox x:Name="HeartRate" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="{Binding HeartRateText, FallbackValue=00}" FontSize="24" Margin="0,0,0,0" Padding="5,5,5,5">
+        </TextBox>
+
+        <CheckBox x:Name="BluetoothConnected" Grid.Row="1" Grid.Column="3" IsChecked="{Binding Connected}" FontSize="6"  Margin="10,10,10,10" >
+        </CheckBox>
+        <ComboBox x:Name="Devices"  Grid.Row="1" Grid.Column="4" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" Width="230"
+                  IsEnabled="true"
+                  DisplayMemberPath="Name" 
+                  ItemsSource="{Binding DeviceList}" SelectedItem="{Binding SelectedDevice}" Height="34" RenderTransformOrigin="0.512,0.512"/>
+
+        <Button x:Name="ConnectBtn" Grid.Row="1" Grid.Column="5" Content="Connect" 
+                HorizontalAlignment="Left" Margin="10,10,10,10" 
+                VerticalAlignment="Center" FontSize="24" Padding="20,10,0,0"
+                IsEnabled="{Binding NotConnected}" 
+                Command="{Binding ConnectCommand}"/>
 
     </Grid>
 </Window>

@@ -12,6 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Prism.Commands;
+using System.ComponentModel;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Devices.Enumeration;
+using Windows.Storage.Streams;
+using System.Collections.ObjectModel;
 
 namespace HeartRateMonitorAppPart2
 {
@@ -20,38 +27,18 @@ namespace HeartRateMonitorAppPart2
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BluetoothControl? bluetoothControl1;
+        public MainWindowViewModel ViewModel 
+        { 
+            get => (MainWindowViewModel) DataContext; 
+            set => DataContext = value; 
+        }
 
-        public MainWindow(BluetoothControl bluetoothControl)
+        public MainWindow(MainWindowViewModel _viewModel)
         {
             InitializeComponent();
-
-            bluetoothControl1 = bluetoothControl;
-
+            ViewModel = _viewModel;
+            ViewModel.Initialize(Devices.Dispatcher);
         }
-
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-
-            if (bluetoothControl1 != null)
-                bluetoothControl1.ReadReady += OnBluetoothReadReady;
-        }
-
-        private void OnBluetoothReadReady(object sender, BluetoothReadEventArgs e)
-        {
-            if (e != null && e.Value != null)
-            {
-                //HeartRateLiveTextbox.AppendText($"「{e.Entry.Text}」\n{e.Entry.TranslatedText}\n\n");
-                HeartRate.Dispatcher.BeginInvoke(() =>
-                {
-                    HeartRate.Text = e.Value;
-                }); 
-                //HeartRateLiveTextbox.ScrollToEnd();
-            }
-        }
-
-
 
     }
 }

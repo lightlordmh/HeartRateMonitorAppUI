@@ -32,8 +32,9 @@ namespace HeartRateMonitorAppPart2
 
         private static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
         {
-            services.AddSingleton<MainWindow>();
             services.AddSingleton<BluetoothControl>();       
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<MainWindow>();
         }
 
         protected override async void OnStartup(StartupEventArgs e)

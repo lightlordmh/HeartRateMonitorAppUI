@@ -1,26 +1,45 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
+using Prism.Mvvm;
 
 namespace HeartRateMonitorAppPart2
 {
-    public class BluetoothControl
+    public class BluetoothControl : BindableBase
     {
-        protected DeviceInformation? blueToothDevice;
+        public DeviceInformation? blueToothDevice;
         protected DeviceWatcher? deviceWatcher;
 
         public event EventHandler<BluetoothReadEventArgs> ReadReady;
+        public ObservableCollection<DeviceInformation> DeviceList { get; private set; } = new ObservableCollection<DeviceInformation>();
+
+        public Action<Action> SafeInvoke;
 
         public string HEART_RATE_SERVICE_ID = "180d";
+        public string trackerName;
+        // = "808S 0039730";
+
+        public bool Connected
+        {
+            get { return _connected; }
+            set
+            {
+                SafeInvoke?.Invoke(() =>
+                {
+                    SetProperty(ref _connected, value, nameof(Connected));
+                });
+            }
+        }
+        private bool _connected;
+
 
         public BluetoothControl()
         {
-            InitializeDeviceWatcher();
-            MainControl();
         }
 
         public void InitializeDeviceWatcher()
@@ -46,12 +65,12 @@ namespace HeartRateMonitorAppPart2
             deviceWatcher.Start();
         }
 
-        public async Task MainControl()
+        public async Task RunMainControl()
         {
-            if (deviceWatcher == null)
-            {
-                return;
-            }
+            //if (deviceWatcher == null)
+            //{
+            //    return;
+            //}
 
             while (true)
             {
@@ -116,6 +135,7 @@ namespace HeartRateMonitorAppPart2
 
         private void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
+            Connected = true;
             // An Indicate or Notify reported that the value has changed.
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             // Parse the data however required.
@@ -131,34 +151,40 @@ namespace HeartRateMonitorAppPart2
 
         private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
-            //throw new NotImplementedException();
+
         }
 
         private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
-            //throw new NotImplementedException();
+
         }
 
         private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            //throw new NotImplementedException();
+            // TODO
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            //throw new NotImplementedException();
+
         }
 
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
-            if (args.Name == "808S 0039730")
+            //if (args.Name == trackerName)
+            //{
+            //    blueToothDevice = args;
+            //    Console.WriteLine("Tracker Found!");
+            //}
+            if (!String.IsNullOrEmpty(args.Name))
             {
-                blueToothDevice = args;
-                Console.WriteLine("Tracker Found!");
+                SafeInvoke?.Invoke(() =>
+                {
+                    DeviceList.Add(args);
+                });
             }
             //Console.WriteLine(args.Name);
             //Console.WriteLine(args.Id);
-            //throw new NotImplementedException();
         }
 
     }
