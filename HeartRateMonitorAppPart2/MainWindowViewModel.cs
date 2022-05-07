@@ -24,14 +24,19 @@ using System.Windows.Threading;
 
 namespace HeartRateMonitorAppPart2
 {
-
+    /// <summary>
+    /// This class controls the UI and gets the data from the Bluetooth class and displays it
+    /// </summary>
     public class MainWindowViewModel : BindableBase
     {
+        //setup a instance reference to the bluetoothControl class for bluetooth communication
         public BluetoothControl? BluetoothInterface;
-
+        //sets up a Device list collection that will fire events when data is added it and link that the duplcate list in the bluetoothControl class
         public ObservableCollection<DeviceInformation> DeviceList { get => BluetoothInterface?.DeviceList; }
+        //lil bro set this up (figure out how it functions and relate then write up)
         private Dispatcher UIDispatcher;
 
+        //
         public DeviceInformation SelectedDevice
         {
             get { return _selectedDevice; }

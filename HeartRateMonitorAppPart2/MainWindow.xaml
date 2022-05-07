@@ -29,7 +29,7 @@
         <TextBox x:Name="HeartRate" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="{Binding HeartRateText, FallbackValue=00}" FontSize="24" Margin="0,0,0,0" Padding="5,5,5,5">
         </TextBox>
 
-        <CheckBox x:Name="BluetoothConnected" Grid.Row="1" Grid.Column="3" IsChecked="{Binding Connected}" FontSize="6"  Margin="10,10,10,10" >
+        <CheckBox x:Name="BluetoothConnected" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" IsChecked="{Binding Connected}" FontSize="6"  Margin="10,10,10,10" >
         </CheckBox>
         <ComboBox x:Name="Devices"  Grid.Row="1" Grid.Column="4" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" Width="230"
                   IsEnabled="true"
@@ -38,7 +38,7 @@
 
         <Button x:Name="ConnectBtn" Grid.Row="1" Grid.Column="5" Content="Connect" 
                 HorizontalAlignment="Left" Margin="10,10,10,10" 
-                VerticalAlignment="Center" FontSize="24" Padding="20,10,0,0"
+                VerticalAlignment="Center" FontSize="24" Padding="10,10,10,10"
                 IsEnabled="{Binding NotConnected}" 
                 Command="{Binding ConnectCommand}"/>
 
