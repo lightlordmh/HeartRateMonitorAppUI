@@ -21,6 +21,8 @@ using Windows.Storage.Streams;
 using System.Collections.ObjectModel;
 using Prism.Mvvm;
 using System.Windows.Threading;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace HeartRateMonitorAppPart2
 {
@@ -29,6 +31,7 @@ namespace HeartRateMonitorAppPart2
     /// </summary>
     public class MainWindowViewModel : BindableBase
     {
+        public SeriesCollection SeriesCollection { get; set; }
         //setup a instance reference to the bluetoothControl class for bluetooth communication
         public BluetoothControl? BluetoothInterface;
         //sets up a Device list collection that will fire events when data is added it and link that the duplcate list in the bluetoothControl class
@@ -104,6 +107,18 @@ namespace HeartRateMonitorAppPart2
         public MainWindowViewModel(BluetoothControl bluetoothControl)
         {
             BluetoothInterface = bluetoothControl;
+            GraphControl();
+        }
+
+        public void GraphControl()
+        {
+            SeriesCollection = new SeriesCollection
+            {
+             new LineSeries
+             {
+                 Values = new ChartValues<double> { 3, 5, 7, 4 }
+             }
+            };
         }
 
         public void Initialize(Dispatcher _UIDispatcher)
@@ -140,6 +155,7 @@ namespace HeartRateMonitorAppPart2
         }
 
     }
+
 }
 
 

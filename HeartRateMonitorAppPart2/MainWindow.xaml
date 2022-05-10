@@ -4,18 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HeartRateMonitorAppPart2"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="1000" >
     <Grid d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10"/>   <!-- 0 -->
-            <ColumnDefinition Width="auto"/> <!-- 1 -->
-            <ColumnDefinition Width="auto"/> <!-- 2 -->
-            <ColumnDefinition Width="auto"/> <!-- 3 -->
-            <ColumnDefinition Width="auto"/> <!-- 4 -->
-            <ColumnDefinition Width="auto"/> <!-- 5 -->
-            <ColumnDefinition Width="*"/>    <!-- 6 -->
-            <ColumnDefinition Width="10"/>   <!-- 7 -->
+            <ColumnDefinition Width="10"/>
+            <!-- 0 -->
+            <ColumnDefinition Width="auto"/>
+            <!-- 1 -->
+            <ColumnDefinition Width="auto"/>
+            <!-- 2 -->
+            <ColumnDefinition Width="auto"/>
+            <!-- 3 -->
+            <ColumnDefinition Width="auto"/>
+            <!-- 4 -->
+            <ColumnDefinition Width="auto"/>
+            <!-- 5 -->
+            <ColumnDefinition Width="*"/>
+            <!-- 6 -->
+            <ColumnDefinition Width="10"/>
+            <!-- 7 -->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
@@ -41,6 +50,13 @@
                 VerticalAlignment="Center" FontSize="24" Padding="10,10,10,10"
                 IsEnabled="{Binding NotConnected}" 
                 Command="{Binding ConnectCommand}"/>
-
+        <lvc:CartesianChart Series="{Binding SeriesCollection}" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="4" Margin="36,77,0,0" Grid.RowSpan="3" LegendLocation="Bottom">
+            <lvc:CartesianChart.AxisX>
+                <lvc:Axis Title="Time"></lvc:Axis>
+            </lvc:CartesianChart.AxisX>
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Title="Heartrate"></lvc:Axis>
+            </lvc:CartesianChart.AxisY>
+        </lvc:CartesianChart>
     </Grid>
 </Window>
