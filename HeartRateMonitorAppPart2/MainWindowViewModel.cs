@@ -31,7 +31,14 @@ namespace HeartRateMonitorAppPart2
     /// </summary>
     public class MainWindowViewModel : BindableBase
     {
+
+        public bool startLog = false;
+
+        private string _heartRateText;
+        public ChartValues<double> HRValues { get; set; }
+
         public SeriesCollection SeriesCollection { get; set; }
+
         //setup a instance reference to the bluetoothControl class for bluetooth communication
         public BluetoothControl? BluetoothInterface;
         //sets up a Device list collection that will fire events when data is added it and link that the duplcate list in the bluetoothControl class
@@ -55,27 +62,85 @@ namespace HeartRateMonitorAppPart2
         }
         private DeviceInformation _selectedDevice;
 
+        #region "Commands"
         public DelegateCommand ConnectCommand => _connectCommand ??= new DelegateCommand(ConnectOrDisconnect);
         private DelegateCommand _connectCommand;
 
+        private bool _connecting;
+
         public async void ConnectOrDisconnect()
         {
+            if (_connecting)
+                return;
             try
             {
+                _connecting = true;
                 await Task.Factory.StartNew(() =>
                 {
                     BluetoothInterface.RunMainControl();
+                    _connecting = false;
                 });
                 Connected = true;
             }
             catch (Exception ex)
             {
+                _connecting = false;
                 Connected = false;
                 var err = $"An error has occurred: {ex.Message}";
                 Console.WriteLine(err);
                 MessageBox.Show(err);
             }
         }
+        public DelegateCommand Start => _start ??= new DelegateCommand(StartLogs);
+        private DelegateCommand _start;
+        private void StartLogs()
+        {
+            startLog = true;
+            HRValues.Clear();
+        }
+
+        public DelegateCommand Stop => _stop ??= new DelegateCommand(StopLog);
+
+        private void StopLog()
+        {
+            startLog = false;
+        }
+
+        private DelegateCommand _stop;
+
+
+        #endregion
+
+        #region "Properties"
+        public bool IsMale
+        {
+            get { return _isMale; }
+            set
+            {
+                SetProperty(ref _isMale, value, nameof(IsMale));
+            }
+        }
+        private bool _isMale = true;
+
+        public string AgeText
+        {
+            get { return _ageText; }
+            set
+            {
+                SetProperty(ref _ageText, value, nameof(AgeText));
+            }
+        }
+        private string _ageText;
+
+        public string WeightText
+        {
+            get { return _weightText; }
+            set
+            {
+                SetProperty(ref _weightText, value, nameof(WeightText));
+            }
+        }
+        private string _weightText;
 
         public bool Connected
         {
@@ -101,8 +166,8 @@ namespace HeartRateMonitorAppPart2
                 SetProperty(ref _heartRateText, value, nameof(HeartRateText));
             }
         }
-        private string _heartRateText;
 
+        #endregion
 
         public MainWindowViewModel(BluetoothControl bluetoothControl)
         {
@@ -112,13 +177,20 @@ namespace HeartRateMonitorAppPart2
 
         public void GraphControl()
         {
+            HRValues = new ChartValues<double> { 95, 95, 95, 95, 95, 95 };
+            //{ 95, 130, 100, 60, 85, 175 };
             SeriesCollection = new SeriesCollection
             {
-             new LineSeries
-             {
-                 Values = new ChartValues<double> { 3, 5, 7, 4 }
-             }
-            };
+                new LineSeries
+                {
+                    LineSmoothness= 0,
+                    Values = HRValues,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 2,
+                    Fill = Brushes.Transparent,
+                    PointGeometry= null,
+                }
+            };  
         }
 
         public void Initialize(Dispatcher _UIDispatcher)
@@ -143,6 +215,10 @@ namespace HeartRateMonitorAppPart2
                 //});
                 //HeartRateLiveTextbox.ScrollToEnd();
                 HeartRateText = e.Value;
+                if (startLog)
+                {
+                    HRValues?.Add(Convert.ToDouble(e.Value));
+                }
             }
         }
 

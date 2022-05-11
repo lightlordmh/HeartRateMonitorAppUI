@@ -19,6 +19,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace HeartRateMonitorAppPart2
 {
@@ -40,5 +41,10 @@ namespace HeartRateMonitorAppPart2
             ViewModel.Initialize(Devices.Dispatcher);
         }
 
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
     }
 }

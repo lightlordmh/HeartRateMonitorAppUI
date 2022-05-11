@@ -51,12 +51,17 @@
                 IsEnabled="{Binding NotConnected}" 
                 Command="{Binding ConnectCommand}"/>
         <TextBlock Grid.Column="6" Grid.Row="1" HorizontalAlignment="Center">Workout</TextBlock>
-        <Button Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="2" Margin="130,31,190,0" Background="Green">Start</Button>
-        <Button Grid.Column="6" Grid.Row="1" Margin="120,31,92,0" Background="Yellow">Pause</Button>
-        <Button Grid.Column="6" Grid.Row="1" Margin="218,31,0,0" Background="Red">Stop</Button>
-        <lvc:CartesianChart Series="{Binding SeriesCollection}" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="4" Margin="36,77,0,0" Grid.RowSpan="3" LegendLocation="Bottom">
+        <Button Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="2" Margin="130,31,190,0" Background="Green" Command="{Binding Start}">Start/Reset</Button>
+        <Button Grid.Column="6" Grid.Row="1" Margin="218,31,0,0" Background="Red" Command="{Binding Stop}">Stop</Button>
+        <lvc:CartesianChart Series="{Binding SeriesCollection}"  Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="4" Margin="36,77,0,0" Grid.RowSpan="3">
+            <lvc:CartesianChart.Resources>
+                <Style TargetType="lvc:DefaultTooltip">
+                    <Setter Property="ShowSeries" Value="False"/>
+                    <Setter Property="ShowTitle" Value="False"/>
+                </Style>
+            </lvc:CartesianChart.Resources>
             <lvc:CartesianChart.AxisX>
-                <lvc:Axis Title="Time"></lvc:Axis>
+                <lvc:Axis Title="Data Points Through Out workout"></lvc:Axis>
             </lvc:CartesianChart.AxisX>
             <lvc:CartesianChart.AxisY>
                 <lvc:Axis Title="Heartrate"></lvc:Axis>
@@ -64,14 +69,14 @@
         </lvc:CartesianChart>
         <StackPanel Grid.Row="2" Grid.Column="1">
             <Label>Male or Female?</Label>
-            <RadioButton>Male</RadioButton>
-            <RadioButton>Female</RadioButton>
+            <RadioButton GroupName="gender" IsChecked="{Binding IsMale}">Male</RadioButton>
+            <RadioButton GroupName="gender">Female</RadioButton>
             <Label>Age?</Label>
-            <TextBox></TextBox>
-            <Label>Weight?(in Kg)</Label>
-            <TextBox></TextBox>
+            <TextBox HorizontalAlignment="Left" PreviewTextInput="TextBox_PreviewTextInput" Text="{Binding AgeText, Mode=TwoWay, StringFormat=##0}" MaxLength="3" Width="48"/>
+            <Label Content="Weight?(in kg) *1 kg = 2.2 lb"/>
+            <TextBox HorizontalAlignment="Left" PreviewTextInput="TextBox_PreviewTextInput" Text="{Binding WeightText, StringFormat=##0.0, Mode=TwoWay}" MaxLength="3" Width="48"></TextBox>
         </StackPanel>
         <TextBlock Grid.Row="3" Grid.Column="1" FontSize="28" HorizontalAlignment="Center" Text=" Calories Burned:"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" FontSize="28" HorizontalAlignment="Center" Margin="0,49,0,0">0000</TextBlock>
+        <TextBlock Text="{Binding Calories}" Grid.Row="3" Grid.Column="1" FontSize="28" HorizontalAlignment="Center" Margin="0,49,0,0">0000</TextBlock>
     </Grid>
 </Window>

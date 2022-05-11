@@ -31,6 +31,9 @@ namespace HeartRateMonitorAppPart2
         public string trackerName;
         // = "808S 0039730";
 
+        public GattDeviceService? cachedDeviceService;
+        public GattCharacteristic? cachedCharacteristic;
+
         //unknown purpose ask drew
         public bool Connected
         {
@@ -78,8 +81,8 @@ namespace HeartRateMonitorAppPart2
         //the main control method for connecting and getting data from device (this is a thread)
         public async Task RunMainControl()
         {
-            
-            SetupDevice();
+
+            await SetupDevice();
 
             if (deviceWatcher == null)
             {
@@ -89,10 +92,15 @@ namespace HeartRateMonitorAppPart2
             {
                 deviceWatcher.Stop();
             }
+
+            //while (true)
+            //{
+            //    Thread.Sleep(200);
+            //}
         }
 
         //Starts the negotiation for communication with the device
-        private async void SetupDevice()
+        private async Task SetupDevice()
         {
             //loop for when catching when a device selected
             while (true)
@@ -111,13 +119,15 @@ namespace HeartRateMonitorAppPart2
                     //if services found continue else fail
                     if (result.Status == GattCommunicationStatus.Success)
                     {
-                        SetupService(result);
+                       var tmp = await SetupService(result);
                     }
                     else
                     {
                         Console.WriteLine("pairing failed");
                         Console.WriteLine(result.Status);
                     }
+
+                    // Device found, exit
                     break;
                 }
             }
@@ -125,7 +135,7 @@ namespace HeartRateMonitorAppPart2
         }
 
         //Determines if the device has a heartrate service
-        private async void SetupService(GattDeviceServicesResult result)
+        private async Task<bool> SetupService(GattDeviceServicesResult result)
         {
             Console.WriteLine("Pairing succeeded");
             //bool to store if the service was found
@@ -137,14 +147,15 @@ namespace HeartRateMonitorAppPart2
                 //check if the current service is the heartrate service
                 if (service.Uuid.ToString("N").Substring(4, 4) == HEART_RATE_SERVICE_ID)
                 {
+                    cachedDeviceService = service;
+
                     Console.WriteLine("Found Heart rate service");
                     //attempt to get the characteristics
                     GattCharacteristicsResult characteristicResult = await service.GetCharacteristicsAsync();
                     //if attempt succeeds  continue else do nothing
                     if (characteristicResult.Status == GattCommunicationStatus.Success)
                     {
-                        sucessCheck = true; 
-                        SetupCharacteristic(characteristicResult);
+                        sucessCheck = await SetupCharacteristic(characteristicResult);
                     }
                 }
             }
@@ -153,11 +164,11 @@ namespace HeartRateMonitorAppPart2
             {
                 Console.WriteLine("heart rate service not found error");
             }
-
+            return sucessCheck;
         }
 
         //Sets up the final step determining if the device has a notification on a characteristic 
-        private async void SetupCharacteristic(GattCharacteristicsResult characteristicResult)
+        private async Task<bool> SetupCharacteristic(GattCharacteristicsResult characteristicResult)
         {
             var characteristics = characteristicResult.Characteristics;
             bool successCheck = false;
@@ -176,7 +187,9 @@ namespace HeartRateMonitorAppPart2
                     if (status == GattCommunicationStatus.Success)
                     {
                         successCheck = true;
+                        cachedCharacteristic = characteristic;
                         characteristic.ValueChanged += Characteristic_ValueChanged;
+                        //var temp = await characteristic.ReadValueAsync();
                         // Server has been informed of clients interest.
                     }
                 }
@@ -185,6 +198,7 @@ namespace HeartRateMonitorAppPart2
             {
                 Console.WriteLine("Failed to setup characteristic and property");
             }
+            return successCheck;
         }
 
         //Event for catching when the charateristic's value has changed
@@ -199,7 +213,7 @@ namespace HeartRateMonitorAppPart2
             //Parse the HeartRate Data out of the last part of the 16bit variable
             var value = reader.ReadByte();
             //
-            var stuff = $"{flags} - {value}";
+            //var stuff = $"{flags} - {value}";
             //Console.WriteLine(stuff);
             //Fire an event that initializes and stores the Heart rate data in an event args class
             ReadReady?.Invoke(this, new BluetoothReadEventArgs(value.ToString()));
