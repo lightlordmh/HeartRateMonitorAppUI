@@ -8,12 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Settings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="MainWindowViewModel" />
     <None Remove="NewFile1.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <!--<PackageReference Include="Bluetooth" Version="1.0.0.2" />-->
+    <PackageReference Include="Jot" Version="2.1.13" />
     <PackageReference Include="LiveCharts" Version="0.9.7" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />

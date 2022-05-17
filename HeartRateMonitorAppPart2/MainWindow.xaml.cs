@@ -34,17 +34,70 @@ namespace HeartRateMonitorAppPart2
             set => DataContext = value; 
         }
 
-        public MainWindow(MainWindowViewModel _viewModel)
+        private SettingsService SettingsService { get; set; }
+
+        public MainWindow(MainWindowViewModel _viewModel, SettingsService _settingsService)
         {
             InitializeComponent();
-            ViewModel = _viewModel;
-            ViewModel.Initialize(Devices.Dispatcher);
+            
+            SettingsService = _settingsService;
+
+            SettingsService.Tracker.Configure<Window>()
+                    .Id(w => w.Name, SystemParameters.VirtualScreenHeight / SystemParameters.VirtualScreenWidth)
+                    .Properties(w => new { w.Height, w.Width, w.Left, w.Top, w.WindowState })
+                    .PersistOn(nameof(Window.LocationChanged), nameof(Window.SizeChanged), nameof(Window.Closing))
+                    .WhenPersistingProperty((f, p) =>
+                    {
+                        var propNameIsWindowSizeOrPosition = p.Property == nameof(Window.Height) || p.Property == nameof(Window.Width) || p.Property == nameof(Window.Top) || p.Property == nameof(Window.Left);
+                        p.Cancel = f.WindowState != WindowState.Normal && propNameIsWindowSizeOrPosition;
+                    })
+                    .StopTrackingOn(nameof(Window.Closing));
+
+            SettingsService.Tracker.Track(this);
+
+            SizeToFit();
+            MoveIntoView();
+
+            try
+            {
+                ViewModel = _viewModel;
+                ViewModel.Initialize(Devices.Dispatcher);
+            }
+            catch (Exception)
+            {
+                SystemCommands.CloseWindow(this);
+            }
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        protected void SizeToFit()
+        {
+            if (Height > SystemParameters.VirtualScreenHeight)
+                Height = SystemParameters.VirtualScreenHeight;
+            if (Width > SystemParameters.VirtualScreenWidth)
+                Width = SystemParameters.VirtualScreenWidth;
+        }
+        protected void MoveIntoView()
+        {
+            if (Top + (Height / 2) > (SystemParameters.VirtualScreenHeight + SystemParameters.VirtualScreenTop))
+                Top = SystemParameters.VirtualScreenHeight + SystemParameters.VirtualScreenTop - Height;
+            if (Left + (Width / 2) > (SystemParameters.VirtualScreenWidth + SystemParameters.VirtualScreenLeft))
+                Left = SystemParameters.VirtualScreenHeight + SystemParameters.VirtualScreenLeft - Width;
+            if (Top < SystemParameters.VirtualScreenTop)
+                Top = SystemParameters.VirtualScreenTop;
+            if (Left < SystemParameters.VirtualScreenLeft)
+                Left = SystemParameters.VirtualScreenLeft;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            SettingsService.Tracker.PersistAll();
         }
     }
 }
